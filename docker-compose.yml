@@ -1,0 +1,21 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:14.3
+    environment:
+      POSTGRES_DB: counting
+      POSTGRES_USER: counting
+      POSTGRES_PASSWORD: counting
+  redis:
+    image: redis:7.0.4
+  bot:
+    build: .
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      DATABASE_URL: r2dbc:postgresql://postgres:5432/counting
+      DATABASE_USERNAME: counting
+      DATABASE_PASSWORD: counting
+      REDIS_HOST: redis
