@@ -8,3 +8,6 @@ spring:
     client-type: lettuce
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
+
+discord:
+  token: ${DISCORD_TOKEN}
