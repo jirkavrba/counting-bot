@@ -14,11 +14,15 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class DiscordBot implements CommandLineRunner {
 
     private final DiscordConfiguration configuration;
+
+    private final List<DiscordEventListener> listeners;
 
     @Override
     public void run(String... args) throws Exception {
@@ -48,6 +52,9 @@ public class DiscordBot implements CommandLineRunner {
     }
 
     private Mono<Void> registerEventListeners(@NonNull GatewayDiscordClient client) {
-        return Mono.empty();
+        return this.listeners.stream()
+                .map(listener -> listener.register(client))
+                .reduce(Mono::and)
+                .orElseGet(Mono::empty);
     }
 }
