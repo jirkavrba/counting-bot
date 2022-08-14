@@ -33,15 +33,21 @@ public class MessageListener implements DiscordEventListener {
      * Evaluate the provided input (or return an empty optional if the input is not valid)
      *
      * @param input Input obtained from a
-     * @return Parsed integer after evaluation or empty optiona
+     * @return Parsed integer after evaluation or empty optional
      */
-    private Optional<Integer> evaluate(@NonNull String input) {
+    private Optional<Long> evaluate(@NonNull String input) {
         if (!input.matches("[\\d \\-+/*()]+")) {
             return Optional.empty();
         }
 
         try {
-            return Optional.of(new DoubleEvaluator().evaluate(input).intValue());
+            final var evaluation = new DoubleEvaluator().evaluate(input);
+
+            if (evaluation.isInfinite() || evaluation.isNaN()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(evaluation.longValue());
         }
         // An invalid expression was provided
         catch (IllegalArgumentException exception) {
@@ -49,7 +55,7 @@ public class MessageListener implements DiscordEventListener {
         }
     }
 
-    private Mono<Void> processNumber(@NonNull MessageCreateEvent event, int number) {
-        return event.getMessage().addReaction(ReactionEmoji.unicode("\uD83D\uDDFF"));
+    private Mono<Void> processNumber(@NonNull MessageCreateEvent event, Long number) {
+        return event.getMessage().addReaction(ReactionEmoji.unicode("\uD83E\uDDEE"));
     }
 }
