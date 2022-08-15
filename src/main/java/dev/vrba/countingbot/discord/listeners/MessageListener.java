@@ -92,7 +92,7 @@ public class MessageListener implements DiscordEventListener {
     private Mono<Void> handleCorrectNumber(@NonNull MessageCreateEvent event, long channel, long user) {
         return this.repository.incrementCount(channel)
                 .and(this.repository.setLastUser(channel, user))
-                .and(event.getMessage().addReaction(ReactionEmoji.unicode("✔")));
+                .and(event.getMessage().addReaction(ReactionEmoji.unicode("✅")));
     }
 
     private Mono<Void> handleIncorrectNumber(@NonNull MessageCreateEvent event, long channel, long user, long number) {
