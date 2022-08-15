@@ -1,8 +1,8 @@
 package dev.vrba.countingbot.repository;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +21,7 @@ public class ChannelsRepository {
     public Mono<Boolean> isTrackedChannel(long channel) {
         // Check that the channel key is present in the redis key
         return this.operations.opsForValue()
-                .get(key(channel))
+                .get(countKey(channel))
                 .map(value -> true)
                 .defaultIfEmpty(false);
     }
@@ -34,7 +34,7 @@ public class ChannelsRepository {
      */
     public Mono<Long> resetCount(long channel) {
         return this.operations.opsForValue()
-                .set(key(channel), "0")
+                .set(countKey(channel), "0")
                 .map(output -> 0L);
     }
 
@@ -46,7 +46,7 @@ public class ChannelsRepository {
      */
     public Mono<Long> incrementCount(long channel) {
         return this.operations.opsForValue()
-                .increment(key(channel));
+                .increment(countKey(channel));
     }
 
     /**
@@ -55,12 +55,17 @@ public class ChannelsRepository {
      */
     public Mono<Long> getCurrentCount(long channel) {
         return this.operations.opsForValue()
-                .get(key(channel))
+                .get(countKey(channel))
                 .map(Long::valueOf);
     }
 
     @NonNull
-    private String key(long channel) {
-        return "channel:" + channel;
+    private String countKey(long channel) {
+        return "channel:" + channel + ":count";
+    }
+
+    @NonNull
+    private String userKey(long channel) {
+        return "channel:"  + channel + ":user";
     }
 }
