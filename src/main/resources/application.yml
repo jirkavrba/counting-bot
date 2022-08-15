@@ -1,9 +1,4 @@
 spring:
-  r2dbc:
-    username: ${DATABASE_USERNAME:counting}
-    password: ${DATABASE_PASSWORD:counting}
-    url: ${DATABASE_URL:r2dbc:postgresql://localhost:5432/counting}
-
   redis:
     client-type: lettuce
     host: ${REDIS_HOST:localhost}

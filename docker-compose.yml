@@ -1,17 +1,10 @@
 version: '3'
 services:
-  postgres:
-    image: postgres:14.3
-    environment:
-      POSTGRES_DB: counting
-      POSTGRES_USER: counting
-      POSTGRES_PASSWORD: counting
   redis:
     image: redis:7.0.4
   bot:
     build: .
     depends_on:
-      - postgres
       - redis
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
