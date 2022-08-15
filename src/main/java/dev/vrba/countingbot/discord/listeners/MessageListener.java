@@ -48,10 +48,6 @@ public class MessageListener implements DiscordEventListener {
      * @return Parsed integer after evaluation or empty optional
      */
     private Optional<Long> evaluate(@NonNull String input) {
-        if (!input.matches("[\\d \\-+/*()]+")) {
-            return Optional.empty();
-        }
-
         try {
             final var evaluation = new DoubleEvaluator().evaluate(input);
 
