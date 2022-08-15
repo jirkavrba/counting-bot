@@ -33,8 +33,10 @@ public class ChannelsRepository {
      * @return Current count of the guild (always zero)
      */
     public Mono<Long> resetCount(long channel) {
-        return this.operations.opsForValue()
-                .set(countKey(channel), "0")
+        final var ops = this.operations.opsForValue();
+
+        return ops.set(countKey(channel), "0")
+                .and(ops.set(userKey(channel), "0"))
                 .map(output -> 0L);
     }
 
@@ -57,6 +59,26 @@ public class ChannelsRepository {
         return this.operations.opsForValue()
                 .get(countKey(channel))
                 .map(Long::valueOf);
+    }
+
+    /**
+     * @param channel ID of the channel that the last user id should be returned
+     * @return ID of the user that submitted the last number to the provided channel
+     */
+    public Mono<Long> getLastUser(long channel) {
+        return this.operations.opsForValue()
+                .get(userKey(channel))
+                .map(Long::valueOf);
+    }
+
+    /**
+     * @param channel ID of the channel that the last sender should be set to
+     * @param user ID of the last sender that should be stored for the given channel
+     */
+    public Mono<Void> setLastUser(long channel, long user) {
+        return this.operations.opsForValue()
+                .set(userKey(channel), String.valueOf(user))
+                .then();
     }
 
     @NonNull

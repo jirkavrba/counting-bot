@@ -28,7 +28,7 @@ public class DiscordBot implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // TODO: Check MESSAGE_CONTENT intent
         DiscordClientBuilder.create(configuration.token())
-                .setDefaultAllowedMentions(AllowedMentions.suppressAll())
+                .setDefaultAllowedMentions(AllowedMentions.suppressEveryone())
                 .build()
                 .gateway()
                 .setEnabledIntents(IntentSet.of(Intent.GUILD_MESSAGES))
