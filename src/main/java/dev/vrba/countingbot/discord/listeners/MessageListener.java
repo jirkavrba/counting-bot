@@ -11,7 +11,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 
 @Component
 @AllArgsConstructor
@@ -71,12 +74,13 @@ public class MessageListener implements DiscordEventListener {
                 .flatMap(count -> this.handleCorrectNumber(event, channel))
                 // The number was not correct
                 // TODO: Method is called even after the correct number handler is invoked for some reason
-                .switchIfEmpty(this.handleIncorrectNumber(event, channel));
+                .switchIfEmpty(this.handleIncorrectNumber(event, channel))
+                .onErrorResume(exception -> Mono.empty());
     }
 
     private Mono<Void> handleCorrectNumber(@NonNull MessageCreateEvent event, long channel) {
         return this.repository.incrementCount(channel)
-                .and(event.getMessage().addReaction(ReactionEmoji.unicode("✅")));
+                .and(event.getMessage().addReaction(ReactionEmoji.unicode("\uD83D\uDC4F")));
     }
 
     private Mono<Void> handleIncorrectNumber(@NonNull MessageCreateEvent event, long channel) {

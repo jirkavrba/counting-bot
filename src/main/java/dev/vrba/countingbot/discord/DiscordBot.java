@@ -34,9 +34,9 @@ public class DiscordBot implements CommandLineRunner {
                 .setEnabledIntents(IntentSet.of(Intent.GUILD_MESSAGES))
                 .login()
                 .flatMap(client ->
-                    updatePresence(client)
-                        .and(registerEventListeners(client))
-                        .and(registerSlashCommands(client))
+                    this.updatePresence(client)
+                        .and(this.registerEventListeners(client))
+                        .and(this.registerSlashCommands(client))
                 )
                 .block();
 
@@ -47,10 +47,12 @@ public class DiscordBot implements CommandLineRunner {
         return client.updatePresence(ClientPresence.online(ClientActivity.playing("with numbers")));
     }
 
+    @NonNull
     private Mono<Void> registerSlashCommands(@NonNull GatewayDiscordClient client) {
         return Mono.empty();
     }
 
+    @NonNull
     private Mono<Void> registerEventListeners(@NonNull GatewayDiscordClient client) {
         return this.listeners.stream()
                 .map(listener -> listener.register(client))

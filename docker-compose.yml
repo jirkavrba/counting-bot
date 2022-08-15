@@ -8,7 +8,4 @@ services:
       - redis
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
-      DATABASE_URL: r2dbc:postgresql://postgres:5432/counting
-      DATABASE_USERNAME: counting
-      DATABASE_PASSWORD: counting
       REDIS_HOST: redis
