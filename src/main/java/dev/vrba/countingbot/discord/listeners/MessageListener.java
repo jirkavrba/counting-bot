@@ -14,7 +14,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Component
 @AllArgsConstructor
@@ -23,6 +25,8 @@ public class MessageListener implements DiscordEventListener {
     private final ChannelsRepository repository;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final Random random = new Random();
 
     @NonNull
     @Override
@@ -49,7 +53,7 @@ public class MessageListener implements DiscordEventListener {
      */
     private Optional<Long> evaluate(@NonNull String input) {
         try {
-            final var evaluation = new DoubleEvaluator().evaluate(input);
+            final var evaluation = new DoubleEvaluator().evaluate(input.replace("π", "pi"));
 
             if (evaluation.isInfinite() || evaluation.isNaN()) {
                 return Optional.empty();
@@ -86,9 +90,12 @@ public class MessageListener implements DiscordEventListener {
     }
 
     private Mono<Void> handleCorrectNumber(@NonNull MessageCreateEvent event, long channel, long user) {
+        final var emojis = List.of("\uD83D\uDC4C", "\uD83D\uDE0E", "✅", "\uD83E\uDD29", "\uD83E\uDD75");
+        final var reaction = emojis.get(random.nextInt(emojis.size()));
+
         return this.repository.incrementCount(channel)
                 .and(this.repository.setLastUser(channel, user))
-                .and(event.getMessage().addReaction(ReactionEmoji.unicode("✅")));
+                .and(event.getMessage().addReaction(ReactionEmoji.unicode(reaction)));
     }
 
     private Mono<Void> handleIncorrectNumber(@NonNull MessageCreateEvent event, long channel, long user, long number) {
