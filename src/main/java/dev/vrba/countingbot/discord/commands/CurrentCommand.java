@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @AllArgsConstructor
-public class StartCommand implements DiscordSlashCommand {
+public class CurrentCommand implements DiscordSlashCommand {
 
     private final ChannelsRepository repository;
 
@@ -21,8 +21,8 @@ public class StartCommand implements DiscordSlashCommand {
     @Override
     public ApplicationCommandRequest define() {
         return ApplicationCommandRequest.builder()
-                .name("start-counting")
-                .description("Makes the bot track this channel for count messages")
+                .name("current-count")
+                .description("Provides information about the count state in this channel")
                 .defaultPermission(true)
                 .build();
     }
@@ -33,15 +33,18 @@ public class StartCommand implements DiscordSlashCommand {
         return event.getInteraction()
                 .getChannel()
                 .flatMap(channel ->
-                        this.repository.resetCount(channel.getId().asLong()).and(
-                                event.reply().withEmbeds(
-                                        EmbedCreateSpec.builder()
-                                                .title("Let's go!")
-                                                .description("you can start counting in this channel!")
-                                                .color(Color.MEDIUM_SEA_GREEN)
-                                                .build()
-                                )
-                        )
+                        this.repository.getCurrentCount(channel.getId().asLong())
+                                .zipWith(this.repository.getLastUser(channel.getId().asLong()))
+                                .flatMap(tuple -> {
+                                    final var count = tuple.getT1();
+                                    final var user = tuple.getT2();
+
+                                    return event.reply().withEmbeds(EmbedCreateSpec.builder()
+                                            .color(Color.ENDEAVOUR)
+                                            .addField("Current count value", count.toString(), false)
+                                            .addField("Last message was sent by", user == 0L ? "Nobody" : "<@" + user + ">", false)
+                                            .build());
+                                })
                 )
                 .then();
     }

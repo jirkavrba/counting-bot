@@ -7,6 +7,8 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.util.Color;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +106,12 @@ public class MessageListener implements DiscordEventListener {
                 .and(event.getMessage().getChannel()
                         .cast(TextChannel.class)
                         .flatMap(textChannel -> textChannel.createMessage(
-                            "<@" + user + "> fucked it up at **" + number + "** lmao \uD83E\uDD21"
+                                EmbedCreateSpec.builder()
+                                        .color(Color.CINNABAR)
+                                        .title("Oh no!")
+                                        .description("<@" + user + "> fucked it up at **" + number + "** lmao \uD83E\uDD21")
+                                        .thumbnail("https://c.tenor.com/k5aYvVGNM3cAAAAC/daeth-funi.gif")
+                                        .build()
                         ))
                 );
     }
